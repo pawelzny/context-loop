@@ -33,7 +33,7 @@ test-all: ## run tests on every Python version with tox
 
 coverage: ## check code coverage quickly with the default Python
 	rm -rf htmlcov
-	pipenv run coverage run --source eeee -m pytest
+	pipenv run coverage run --source cl -m pytest
 	pipenv run coverage report -m
 	pipenv run coverage html
 

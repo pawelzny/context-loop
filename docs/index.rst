@@ -8,7 +8,7 @@ Context loop (cl)
 =================
 
 Simple context manager utility for asyncio event loop.
-CL Helps with async pieces of code to be scheduled and run within synchronous code.
+Context loop helps with async pieces of code to be scheduled and run within synchronous code.
 
 Can be used with synchronous and asynchronous frameworks like Django, Flask
 or Tornado and Twisted.
@@ -18,6 +18,7 @@ or Tornado and Twisted.
    :caption: Contents:
 
    context-loop
+   api
    authors
    contributing
 

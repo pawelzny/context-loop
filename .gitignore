@@ -184,3 +184,4 @@ fabric.properties
 
 # custon
 *_backup.*
+/.pytest_cache/
