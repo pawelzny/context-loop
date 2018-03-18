@@ -60,6 +60,7 @@ setup(
     version=get_version('cl', '__init__.py'),
     description='Context manager for asyncio event loop.',
     long_description=readme,
+    license='MIT',
     author='Paweł Zadrożny',
     author_email='pawel.zny@gmail.com',
     url='https://github.com/pawelzny/context-loop',
