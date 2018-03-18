@@ -38,6 +38,17 @@ class Loop:
         >>> result
         ['success sleep for 3 seconds', 'success sleep for 5 seconds']
 
+    When single coroutine has been scheduled to run, only single value will
+    be returned.
+
+    .. code-block:: python
+
+        >>> with Loop(wait_for_it(4)) as loop:
+        ...    result = loop.run_until_complete()
+        ...
+        >>> result
+        'success sleep for 4 seconds'
+
 
     :param futures: One or more coroutine or future.
     :type futures: asyncio.Future, asyncio.coroutine
@@ -52,19 +63,18 @@ class Loop:
     futures = None
     """Gathered futures."""
 
-    def __init__(self, *futures, loop=None, return_exceptions=False, stop_when_done=False):
+    def __init__(self, *futures, loop=None, return_exceptions=False):
         self.loop = self.get_event_loop(loop)
         self.return_exceptions = return_exceptions
-        self.stop_when_done = stop_when_done
         if futures:
-            self.gather(futures)
+            self.gather(*futures)
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.stop_when_done:
-            self.stop()
+        self.loop = None
+        self.futures = None
 
     @staticmethod
     def get_event_loop(loop: asyncio.AbstractEventLoop = None) -> asyncio.AbstractEventLoop:
@@ -76,10 +86,12 @@ class Loop:
         :rtype: asyncio.AbstractEventLoop
         """
 
-        return loop if isinstance(loop, asyncio.AbstractEventLoop) else asyncio.get_event_loop()
+        if loop:
+            return loop
+        return asyncio.new_event_loop()
 
     def gather(self, *futures: Union[asyncio.Future, asyncio.coroutine]):
-        """Gather list of futures / coros into group of asyncio.Task.
+        """Gather list of futures/coros and return single Task ready to schedule.
 
         :Example:
 
@@ -122,37 +134,16 @@ class Loop:
     def run_until_complete(self):
         """Run loop until all futures are done.
 
-        :return: Single or list of results from all scheduled futures.
-        :rtype: list, Any
+        Order of result data will be the same as order of given coros.
+
+        :return: Result, list of results or None if task has been cancelled.
+        :rtype: None, list, Any
         """
 
-        return self.loop.run_until_complete(self.futures)
-
-    def stop(self):
-        """Close loop when no other tasks are scheduled."""
-
-        self.loop.stop()
-
-    def is_running(self):
-        """Check if loop is still running.
-
-        :return: Boolean
-        """
-
-        return self.loop.is_running()
-
-    def is_closed(self):
-        """Check if loop has been closed.
-
-        :return: Boolean
-        """
-
-        return self.loop.is_closed()
-
-    def close(self):
-        """Cancel all scheduled tasks and close loop immediately."""
-
-        self.loop.close()
+        try:
+            return self.loop.run_until_complete(self.futures)
+        except asyncio.futures.CancelledError:
+            return None
 
     def cancel(self):
         """Cancel futures execution.

@@ -23,7 +23,7 @@ clean-pyc: ## remove Python file artifacts
 	find . -name '*~' -exec rm -f {} +
 
 lint: ## check style with flake8
-	pipenv run flake8 vo tests
+	pipenv run flake8 cl tests
 
 test: ## run tests quickly with the default Python
 	pipenv run pytest

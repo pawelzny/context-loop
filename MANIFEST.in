@@ -10,5 +10,5 @@ recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
 
 recursive-include tests *
-recursive-include vo *
+recursive-include cl *
 recursive-include docs *.rst conf.py Makefile *.jpg *.png *.gif

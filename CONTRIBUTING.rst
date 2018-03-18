@@ -75,7 +75,7 @@ Ready to contribute? Here's how to set up `context-loop` for local development.
 3. Install your local copy into a virtualenv. Assuming you have PipEnv installed,
 this is how you set up your fork for local development::
 
-    $ cd vo/
+    $ cd context-loop/
     $ make install-dev
 
 4. Create a branch for local development::
