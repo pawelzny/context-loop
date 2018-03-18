@@ -66,6 +66,7 @@ class Loop:
     def __init__(self, *futures, loop=None, return_exceptions=False):
         self.loop = self.get_event_loop(loop)
         self.return_exceptions = return_exceptions
+        self.ft_count = 0
         if futures:
             self.gather(*futures)
 
@@ -124,12 +125,9 @@ class Loop:
         :return: Futures grouped into single future
         :rtype: asyncio.Task, asyncio.Future
         """
-
-        if len(futures) > 1:
-            self.futures = asyncio.gather(*futures, loop=self.loop,
-                                          return_exceptions=self.return_exceptions)
-        else:
-            self.futures = asyncio.ensure_future(futures[0], loop=self.loop)
+        self.ft_count = len(futures)
+        self.futures = asyncio.gather(*futures, loop=self.loop,
+                                      return_exceptions=self.return_exceptions)
 
     def run_until_complete(self):
         """Run loop until all futures are done.
@@ -141,9 +139,13 @@ class Loop:
         """
 
         try:
-            return self.loop.run_until_complete(self.futures)
+            result = self.loop.run_until_complete(self.futures)
         except asyncio.futures.CancelledError:
             return None
+        else:
+            if self.ft_count == 1:
+                return result[0]
+            return result
 
     def cancel(self):
         """Cancel futures execution.

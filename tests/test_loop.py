@@ -73,3 +73,22 @@ class TestLoop(unittest.TestCase):
             result = lo.run_until_complete()
 
         self.assertIsNone(result)
+
+    def test_return_exception_as_result(self):
+        exc = Exception('fail')
+
+        async def raise_exc():
+            raise exc
+
+        with Loop(raise_exc(), return_exceptions=True) as loop:
+            result = loop.run_until_complete()
+
+        self.assertEqual(result, exc)
+
+    def test_raise_exception_instead_of_result(self):
+        async def raise_exc():
+            raise Exception
+
+        with self.assertRaises(Exception):
+            with Loop(raise_exc()) as loop:
+                loop.run_until_complete()

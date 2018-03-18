@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
-import pathlib
 import re
 import subprocess
 
@@ -14,9 +13,7 @@ __author__ = 'Paweł Zadrożny'
 __copyright__ = 'Copyright (c) 2018, Pawelzny'
 __requires__ = ['pipenv']
 
-base_dir = pathlib.Path(__file__).parent
-
-with open('README.rst', encoding='utf-8') as readme_file:
+with open('README.rst', 'r') as readme_file:
     readme = readme_file.read()
 
 
@@ -77,7 +74,6 @@ setup(
         'Natural Language :: English',
         'Topic :: Software Development',
         'Topic :: Software Development :: Libraries :: Python Modules',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3 :: Only',
