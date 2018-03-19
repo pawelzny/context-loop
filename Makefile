@@ -23,7 +23,7 @@ clean-pyc: ## remove Python file artifacts
 	find . -name '*~' -exec rm -f {} +
 
 lint: ## check style with flake8
-	pipenv run flake8 cl tests
+	pipenv run flake8
 
 test: ## run tests quickly with the default Python
 	pipenv run pytest
@@ -33,7 +33,8 @@ test-all: ## run tests on every Python version with tox
 
 coverage: ## check code coverage quickly with the default Python
 	rm -rf htmlcov
-	pipenv run coverage run --source cl -m pytest
+	pipenv run coverage erase
+	pipenv run coverage run -m pytest
 	pipenv run coverage report -m
 	pipenv run coverage html
 
