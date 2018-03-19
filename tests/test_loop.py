@@ -19,7 +19,7 @@ class TestLoop(unittest.TestCase):
 
     def test_get_existing_event_loop(self):
         existing_loop = asyncio.new_event_loop()
-        loop = Loop.get_event_loop(existing_loop)
+        loop = Loop._get_event_loop(existing_loop)
         self.assertIs(loop, existing_loop)
 
     def test_gather_futures(self):

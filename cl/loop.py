@@ -24,8 +24,8 @@ class Loop:
     .. code-block:: python
 
         >>> async def wait_for_it(timeout):
-        ...    await asyncio.sleep(timeout)
-        ...    return 'success sleep for {} seconds'.format(timeout)
+        ...     await asyncio.sleep(timeout)
+        ...     return 'success sleep for {} seconds'.format(timeout)
         ...
 
     Use context manager to get result from one or more coroutines
@@ -33,7 +33,7 @@ class Loop:
     .. code-block:: python
 
         >>> with Loop(wait_for_it(5), wait_for_it(3), return_exceptions=True) as loop:
-        ...    result = loop.run_until_complete()
+        ...     result = loop.run_until_complete()
         ...
         >>> result
         ['success sleep for 3 seconds', 'success sleep for 5 seconds']
@@ -44,7 +44,7 @@ class Loop:
     .. code-block:: python
 
         >>> with Loop(wait_for_it(4)) as loop:
-        ...    result = loop.run_until_complete()
+        ...     result = loop.run_until_complete()
         ...
         >>> result
         'success sleep for 4 seconds'
@@ -64,7 +64,7 @@ class Loop:
     """Gathered futures."""
 
     def __init__(self, *futures, loop=None, return_exceptions=False):
-        self.loop = self.get_event_loop(loop)
+        self.loop = self._get_event_loop(loop)
         self.return_exceptions = return_exceptions
         self.ft_count = 0
         if futures:
@@ -78,7 +78,7 @@ class Loop:
         self.futures = None
 
     @staticmethod
-    def get_event_loop(loop: asyncio.AbstractEventLoop = None) -> asyncio.AbstractEventLoop:
+    def _get_event_loop(loop: asyncio.AbstractEventLoop = None):
         """Get existing loop or create new one.
 
         :param loop: Optional, already existing loop.
@@ -100,10 +100,10 @@ class Loop:
         .. code-block:: python
 
             >>> async def do_something():
-            ...    return 'something'
+            ...     return 'something'
             ...
             >>> async def do_something_else():
-            ...    return 'something_else'
+            ...     return 'something_else'
             ...
 
         Gather all tasks and then pass to context loop
@@ -113,11 +113,8 @@ class Loop:
             >>> loop = Loop(return_exceptions=True)
             >>> loop.gather(do_something(), do_something_else())
             >>> with loop as l:
-            ...    result = l.run_until_complete()
+            ...     result = l.run_until_complete()
             ...
-            >>> result
-            ['something', 'something_else']
-
 
         :param futures: One or more coroutine or future.
         :type futures: asyncio.Future, asyncio.coroutine
@@ -131,9 +128,31 @@ class Loop:
     def run_until_complete(self):
         """Run loop until all futures are done.
 
-        Order of result data will be the same as order of given coros.
+        Schedule futures for execution and wait until all are done.
+        Return value from future, or list of values if multiple
+        futures had been passed to constructor or gather method.
 
-        :return: Result, list of results or None if task has been cancelled.
+        All results will be in the same order as order of futures passed to constructor.
+
+        :Example:
+
+        .. code-block:: python
+
+            >>> async def slow():
+            ...     await ultra_slow_task()
+            ...     return 'ultra slow'
+            ...
+            >>> async def fast():
+            ...     await the_fastest_task_on_earth()
+            ...
+            >>> with Loop(slow(), fast()) as loop:
+            ...     result = loop.run_until_complete()
+            ...
+            >>> result
+            ['ultra slow', None]
+
+
+        :return: Value from future or list of values.
         :rtype: None, list, Any
         """
         try:
@@ -146,5 +165,26 @@ class Loop:
             return result
 
     def cancel(self):
-        """Cancel pending futures."""
+        """Cancel pending futures.
+
+        If any of futures are already done its result will be lost.
+        Result of loop execution will be None.
+
+        :Example:
+
+        .. code-block:: python
+
+            >>> async def nuke_loop():
+            ...     loop.cancel()
+            ...
+            >>> loop = Loop()
+            >>> loop.gather(nuke_loop())
+            >>> with loop as lo:
+            ...     result = lo.run_until_complete()
+            ...
+            >>> result
+            None
+
+
+        """
         self.futures.cancel()
