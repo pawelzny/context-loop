@@ -15,9 +15,9 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            pip install pipenv;
-            pipenv install;
-            pipenv install --dev;
+            pip install pipenv
+            pipenv install --python `which pypy3`
+            pipenv install --python `which pypy3` --dev
       - save_cache:
           paths:
             - ./repo
@@ -38,9 +38,9 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            pip install pipenv;
-            pipenv install;
-            pipenv install --dev;
+            pip install pipenv
+            pipenv install --three
+            pipenv install --three --dev
       - save_cache:
           paths:
             - ./repo
@@ -61,9 +61,9 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            pip install pipenv;
-            pipenv install;
-            pipenv install --dev;
+            pip install pipenv
+            pipenv install --three
+            pipenv install --three --dev
       - save_cache:
           paths:
             - ./repo
@@ -84,9 +84,9 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            pip install pipenv;
-            pipenv install;
-            pipenv install --dev;
+            pip install pipenv
+            pipenv install --three
+            pipenv install --three --dev
       - save_cache:
           paths:
             - ./repo

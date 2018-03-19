@@ -86,7 +86,6 @@ class Loop:
         :return: Asyncio loop
         :rtype: asyncio.AbstractEventLoop
         """
-
         if loop:
             return loop
         return asyncio.new_event_loop()
@@ -137,7 +136,6 @@ class Loop:
         :return: Result, list of results or None if task has been cancelled.
         :rtype: None, list, Any
         """
-
         try:
             result = self.loop.run_until_complete(self.futures)
         except asyncio.futures.CancelledError:
@@ -148,12 +146,5 @@ class Loop:
             return result
 
     def cancel(self):
-        """Cancel futures execution.
-
-        If futures are already done will return False, otherwise will return True
-
-        :return: Cancellation status.
-        :rtype: Boolean
-        """
-
-        return self.futures.cancel()
+        """Cancel pending futures."""
+        self.futures.cancel()
